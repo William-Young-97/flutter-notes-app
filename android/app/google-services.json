@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "52750110952",
+    "project_id": "note-taker-lc",
+    "storage_bucket": "note-taker-lc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52750110952:android:0f029fe275e6408462b95d",
+        "android_client_info": {
+          "package_name": "co.uk.logicallycreative.notetaker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkgS0lzi9cqV9PpnpSZ05u1VmrgtLwkYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
