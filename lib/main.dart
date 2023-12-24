@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +6,7 @@ import 'package:notetaker/firebase_options.dart';
 import 'package:notetaker/views/login_view.dart';
 import 'package:notetaker/views/register_view.dart';
 import 'package:notetaker/views/verify_email_view.dart';
+import 'dart:developer' as devtools show log;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +79,9 @@ class _NotesViewState extends State<NotesView> {
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
+                    if (!context.mounted) {
+                      return devtools.log('Buildcontext not found');
+                    }
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }
