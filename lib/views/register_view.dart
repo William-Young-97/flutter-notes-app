@@ -67,7 +67,7 @@ class _RegisterViewState extends State<RegisterView> {
                 if (!context.mounted) {
                   return devtools.log('Buildcontext not found');
                 }
-                Navigator.of(context).pushNamed(verifyEmailROute);
+                Navigator.of(context).pushNamed(verifyEmailRoute);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
                   if (!context.mounted) {
