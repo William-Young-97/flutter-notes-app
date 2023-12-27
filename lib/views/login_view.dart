@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:developer' as devtools show log;
 import 'package:notetaker/constants/routes.dart';
-import 'package:notetaker/utilities/show_error_dialog.dart';
+import 'package:notetaker/services/auth/auth_service.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -56,46 +54,22 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-              try {
-                await FirebaseAuth.instance.signInWithEmailAndPassword(
-                  email: email,
-                  password: password,
+              await AuthService.firebase().logIn(
+                email: email,
+                password: password,
+              );
+              final user = AuthService.firebase().currentUser;
+              if (user?.isEmailVerified ?? false) {
+                if (!context.mounted) return;
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  notesRoute,
+                  (_) => false,
                 );
-                final user = FirebaseAuth.instance.currentUser;
-                if (user?.emailVerified ?? false) {
-                  if (!context.mounted) return;
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    notesRoute,
-                    (_) => false,
-                  );
-                } else {
-                  if (!context.mounted) return;
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    verifyEmailRoute,
-                    (_) => false,
-                  );
-                }
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'user-not-found') {
-                  if (!context.mounted) {
-                    return devtools.log('Buildcontext not found');
-                  }
-                  await showErrorDialog(context, 'User not found');
-                } else if (e.code == 'wrong-password') {
-                  if (!context.mounted) {
-                    return devtools.log('Buildcontext not found');
-                  }
-                  await showErrorDialog(context, 'Wrong password');
-                } else {
-                  if (!context.mounted) {
-                    return devtools.log('Buildcontext not found');
-                  }
-                  await showErrorDialog(context, 'Error: ${e.code}');
-                }
-              } catch (e) {
-                showErrorDialog(
-                  context,
-                  'Error: ${e.toString()}',
+              } else {
+                if (!context.mounted) return;
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  verifyEmailRoute,
+                  (_) => false,
                 );
               }
             },
