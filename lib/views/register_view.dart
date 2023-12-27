@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as devtools show log;
 
 import 'package:notetaker/constants/routes.dart';
+import 'package:notetaker/services/auth/auth_exceptions.dart';
 import 'package:notetaker/services/auth/auth_service.dart';
 import 'package:notetaker/utilities/show_error_dialog.dart';
 
@@ -57,16 +58,37 @@ class _RegisterViewState extends State<RegisterView> {
             onPressed: () async {
               final email = _email.text;
               final password = _password.text;
-              await AuthService.firebase().createUser(
-                email: email,
-                password: password,
-              );
-              AuthService.firebase().sendEmailVerification();
-              if (!context.mounted) {
-                devtools.log('BuildContext not found');
-                return;
+              try {
+                await AuthService.firebase().createUser(
+                  email: email,
+                  password: password,
+                );
+                AuthService.firebase().sendEmailVerification();
+                if (!context.mounted) {
+                  return devtools.log('Buildcontext not found');
+                }
+                Navigator.of(context).pushNamed(verifyEmailRoute);
+              } on WeakPasswordAuthExpection {
+                await showErrorDialog(
+                  context,
+                  'Password too weak.',
+                );
+              } on EmailAlreadyInUseAuthExpection {
+                await showErrorDialog(
+                  context,
+                  'Email already in use.',
+                );
+              } on InvalidEmailAuthExpection {
+                await showErrorDialog(
+                  context,
+                  'Invalid email entered..',
+                );
+              } on GenericAuthException {
+                await showErrorDialog(
+                  context,
+                  'Something went wrong.',
+                );
               }
-              Navigator.of(context).pushNamed(verifyEmailRoute);
             },
             child: const Text('Register'),
           ),
