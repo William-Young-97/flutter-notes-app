@@ -27,7 +27,7 @@ const createNoteTable = '''
         "id"	INTEGER NOT NULL,
         "user_id"	INTEGER NOT NULL,
         "text"	TEXT,
-        "is_synced_with_clud"	INTEGER NOT NULL DEFAULT 0,
+        "is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
         PRIMARY KEY("id" AUTOINCREMENT),
         FOREIGN KEY("user_id") REFERENCES "user"("id")
       );
@@ -40,11 +40,16 @@ class NotesService {
 
   // Create a singleton
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Stream<List<DatabaseNote>> get allNotes => _notesStreamController.stream;
 
@@ -149,6 +154,7 @@ class NotesService {
   Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
+    print(db);
     // Make sure correct id owner exists in in DB
     final dbUser = await getUser(email: owner.email);
     if (dbUser != owner) {
@@ -171,7 +177,6 @@ class NotesService {
 
     _notes.add(note);
     _notesStreamController.add(_notes);
-
     return note;
   }
 
