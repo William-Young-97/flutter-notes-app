@@ -154,7 +154,6 @@ class NotesService {
   Future<DatabaseNote> createNote({required DatabaseUser owner}) async {
     await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    print(db);
     // Make sure correct id owner exists in in DB
     final dbUser = await getUser(email: owner.email);
     if (dbUser != owner) {
