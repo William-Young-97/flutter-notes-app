@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:notetaker/constants/routes.dart';
 import 'package:notetaker/enums/menu_action.dart';
 import 'dart:developer' as devtools show log;
 import 'package:notetaker/services/auth/auth_service.dart';
+import 'package:notetaker/services/auth/bloc/auth_bloc.dart';
+import 'package:notetaker/services/auth/bloc/auth_event.dart';
 import 'package:notetaker/services/cloud/cloud_note.dart';
 import 'package:notetaker/services/cloud/firebase_cloud_storage.dart';
 import 'package:notetaker/utilities/dialogs/logout_dialog.dart';
@@ -44,12 +47,12 @@ class _NotesViewState extends State<NotesView> {
                 case MenuAction.logout:
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
-                    await AuthService.firebase().logOut();
                     if (!context.mounted) {
                       return devtools.log('Buildcontext not found');
                     }
-                    Navigator.of(context)
-                        .pushNamedAndRemoveUntil(loginRoute, (_) => false);
+                    context.read<AuthBloc>().add(
+                          const AuthEventLogOut(),
+                        );
                   }
               }
             },
