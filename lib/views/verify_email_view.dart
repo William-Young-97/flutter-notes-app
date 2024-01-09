@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:notetaker/constants/routes.dart';
-import 'dart:developer' as devtools show log;
 import 'package:notetaker/services/auth/bloc/auth_bloc.dart';
 import 'package:notetaker/services/auth/bloc/auth_event.dart';
 
@@ -29,23 +27,16 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           TextButton(
             onPressed: () async {
               context.read<AuthBloc>().add(
-                    const AuthEventVerifyEmail(),
+                    const AuthEventSendEmailVerification(),
                   );
             },
             child: const Text('Send email verification'),
           ),
           TextButton(
             onPressed: () async {
-              if (!context.mounted) {
-                return devtools.log('Buildcontext not found');
-              }
               context.read<AuthBloc>().add(
                     const AuthEventLogOut(),
                   );
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                registerRoute,
-                (route) => false,
-              );
             },
             child: const Text('Restart'),
           ),
